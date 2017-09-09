@@ -7,6 +7,8 @@ class StartState(baseState):
     def __init__(self):
         super(StartState, self).__init__()
         self.persist = {'terrainLoaded':False}
+        self.controls= self.texLib.grab('controls.png')
+        self.cont_rec= self.controls.get_rect(topright=self.s_rect.topright)
 
         self.intro = 'Welcome to the game Mini Tanks'
         self.text  = self.font.render(self.intro, True, (255,255,255))
@@ -49,3 +51,4 @@ class StartState(baseState):
         pygame.draw.rect(surface, (50,50,50), self.pgRect, 3)
         surface.blit(self.pgText, self.pgText.get_rect(center=self.pgRect.center))
         surface.blit(self.text, self.tRect)
+        surface.blit(self.controls, self.cont_rec)
