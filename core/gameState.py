@@ -1,21 +1,19 @@
 import pygame
 from core.baseState import baseState
+from core.terrainGenerator import Terrain
+from core.player import Player
 
 class GameState(baseState):
     def __init__(self):
         super(GameState, self).__init__()
-        self.intro = 'Currently The Game is Under Construction, Sorry :('
-        self.intro2= 'Press ESC to go back to the menu'
-        self.text  = self.font.render(self.intro, True, (255,255,255))
-        self.text2 = self.font.render(self.intro2,True, (255,255,255))
-        self.tRect = self.text.get_rect(center=(self.s_rect.centerx,
-                                                self.s_rect.centery-60))
-        self.tRec2 = self.text2.get_rect(midtop=self.s_rect.midtop)
+        self.terrain = Terrain(*self.s_rect.size)
 
-        self.wLable = self.texLib.grab('warning_strip.jpg')
-        self.wRect  = self.wLable.get_rect(center=self.s_rect.center)
-
-        self.timer  = 0
+    def startup(self, persistent):
+        self.persist = persistent
+        if not self.persist['terrainLoaded']:
+            self.terrain.generateTerrain()
+            self.persist['terrainLoaded'] = True
+            self.players = [Player(60,60)]
 
     def get_event(self, event):
         if event.type == pygame.KEYDOWN:
@@ -24,9 +22,15 @@ class GameState(baseState):
                 self.done = True
 
     def update(self, dt, f_time):
-        pass
+        key = pygame.key.get_pressed()
+        for player in self.players:
+            player.update(dt, key, self.terrain.pixels)
         
     def draw(self, surface):
-        surface.blit(self.wLable, self.wRect)
-        surface.blit(self.text, self.tRect)
-        surface.blit(self.text2, self.tRec2)
+        surface.blit(self.terrain.surface, (0,0))
+        for player in self.players:
+            player.draw(surface)
+
+        coords = self.players[0].getCoords()
+        coords = self.font.render(str(coords), True, (200,200,200))
+        surface.blit(coords, coords.get_rect(topright=self.s_rect.topright))

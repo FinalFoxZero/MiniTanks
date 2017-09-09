@@ -6,6 +6,8 @@ from random import randint
 class StartState(baseState):
     def __init__(self):
         super(StartState, self).__init__()
+        self.persist = {'terrainLoaded':False}
+
         self.intro = 'Welcome to the game Mini Tanks'
         self.text  = self.font.render(self.intro, True, (255,255,255))
         self.tRect = self.text.get_rect(midtop=self.s_rect.midtop)
@@ -28,10 +30,10 @@ class StartState(baseState):
         mpos = pygame.mouse.get_pos()
         mbut = pygame.mouse.get_pressed()
 
-        dx = (self.rCent[0] - self.pgRect.center[0]) / 35
-        dy = (self.rCent[1] - self.pgRect.center[1]) / 35
-        self.pgRect.centerx += dx
-        self.pgRect.centery += dy
+        #dx = (self.rCent[0] - self.pgRect.center[0]) / 35
+        #dy = (self.rCent[1] - self.pgRect.center[1]) / 35
+        #self.pgRect.centerx += dx
+        #self.pgRect.centery += dy
 
         if self.pgRect.collidepoint(mpos):
             self.bOver = True

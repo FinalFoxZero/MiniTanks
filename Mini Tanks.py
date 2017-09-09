@@ -29,6 +29,13 @@ class Game(object):
             #    if event.key == K_ESCAPE: self.done = True
             self.state.get_event(event)
 
+    def default_load(self):
+        self.screen.fill((30,30,30))
+        ld  = self.gFont.render('Loading..', True, (255,255,255))
+        ldr = ld.get_rect(center=self.screen.get_rect().center)
+        self.screen.blit(ld, ldr)
+        pygame.display.flip()
+
     def flip_state(self):
         self.sSwapTime  = time()
         current_state   = self.state_name
@@ -37,6 +44,7 @@ class Game(object):
         self.state_name = next_state
         persistent      = self.state.persist
         self.state      = self.states[self.state_name]
+        self.default_load()
         self.state.startup(persistent)
         self.sSwapTime  = time() - self.sSwapTime
 
@@ -66,7 +74,7 @@ class Game(object):
         cft_ = self.gFont.render(debug[5] + str(self.frame_time), True, (30,160,250))
         sdt_ = self.gFont.render(debug[2] + str(round(self.sDrawTime,  4)) + 'ms', True, (255,255,255))
         slt_ = self.gFont.render(debug[3] + str(round(self.sLogicTime, 4)) + 'ms', True, (255,255,255))
-        sst_ = self.gFont.render(debug[4] + str(round(self.sSwapTime,  4)) + 'ms', True, (255,255,255))
+        sst_ = self.gFont.render(debug[4] + str(round(self.sSwapTime,  8)) + 'ms', True, (255,255,255))
         return(deb_, fps_, cst_, cft_, sdt_, slt_, sst_)
         
     def run(self):
@@ -86,11 +94,11 @@ if __name__ == '__main__':
     pygame.init()
 
     screen = pygame.display.set_mode((640, 480), HWSURFACE | DOUBLEBUF)
-    pygame.display.set_caption('A Python Game')
-    
+    pygame.display.set_caption('Mini Tanks v0.1')
+
     states = {'START' : StartState(),
               'GAME'  : GameState()}
-
+    
     game = Game(screen, states, 'START')
     game.run()
 
