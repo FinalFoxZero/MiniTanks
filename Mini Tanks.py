@@ -30,7 +30,7 @@ class Game(object):
             self.state.get_event(event)
 
     def default_load(self):
-        self.screen.fill((30,30,30))
+        self.screen.fill((10,10,10))
         ld  = self.gFont.render('Loading..', True, (255,255,255))
         ldr = ld.get_rect(center=self.screen.get_rect().center)
         self.screen.blit(ld, ldr)
@@ -54,13 +54,15 @@ class Game(object):
 
         self.sLogicTime = time()
         self.state.update(dt, f_time)
+        GUI.update(self.state)
         self.sLogicTime = time() - self.sLogicTime
 
-    def draw(self):
+    def render(self):
         self.screen.fill((0,0,0))
 
         self.sDrawTime = time()
         self.state.draw(self.screen)
+        GUI.render(self.state, self.screen)
         self.sDrawTime = time() - self.sDrawTime
 
         if self.debug:
@@ -82,7 +84,7 @@ class Game(object):
             dt = self.clock.tick(self.fps) / 1000
             self.event_loop()
             self.update(dt, self.frame_time)
-            self.draw()
+            self.render()
             pygame.display.update()
             self.frame_time += 1
 

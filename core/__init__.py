@@ -6,3 +6,4 @@ if pygame.version.vernum < (1,5):
 
 from core.startState import StartState
 from core.gameState  import GameState
+from core.gui import GUI

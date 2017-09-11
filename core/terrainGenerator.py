@@ -1,5 +1,5 @@
 import pygame
-from random import uniform, randint
+from random import uniform, randint, random
 from math import cos, sin
 
 
@@ -16,7 +16,10 @@ class Terrain(object):
         self.sHeight = s_height
         self.pixels  = []
         self.surface = pygame.Surface((s_width, s_height), pygame.HWSURFACE)
-        #self.generateTerrain()
+
+    def reset_terrain(self):
+        self.pixels = []
+        self.surface = pygame.Surface((self.sWidth, self.sHeight), pygame.HWSURFACE)
 
     def generate_x_list(self):
         x_array = []
@@ -50,28 +53,31 @@ class Terrain(object):
             y_temp = []
             for x, a in enumerate(generated_world):
                 if y >= a:
-                    self.surface.fill((180,180,180), (x,y,1,1))
+                    if y <= a + 16 and y >= a:
+                        self.surface.fill((0,90,10), (x,y,1,1))
+                    else:
+                        self.surface.fill((180,180,180), (x,y,1,1))
                     y_temp.append( Pix(x,y) )
                 else:
-                    y_temp.append( Pix(2048,2048,False) )
+                    y_temp.append( Pix(2048, 2048, False) )
             self.pixels.append(y_temp)
             y_temp = []
 
     def pointsInCircle(self, position, radius):
-        circle = {}; x, y = position; r = radius
+        circle = []; x, y = position; r = radius
         for i in range(x-r, x+r):
             for j in range(y-r, y+r):
-                if ((i-x)*(i-x) + (j-y)*(j-y)) <= r*r: circle.add((i,j))
+                if ((i-x)*(i-x) + (j-y)*(j-y)) <= r*r:
+                    if (0<i<self.sWidth) and (0<j<self.sHeight):
+                        circle.append((i,j))
         return( circle )
 
     def cutSection(self, position, radius):
         circlePoints = self.pointsInCircle(position, radius)
         sArray = pygame.surfarray.pixels3d(self.surface)
         for x, y in circlePoints:
-            try:
-                if (x,y) == self.pixels[y][x]:
-                    self.pixels[y][x].x = 2048
-                    self.pixels[y][x].y = 2048
-                    sArray[x,y] = (0,0,0)
-            except: pass
-w= Terrain(640,480)
+            point = self.pixels[y][x]
+            if (x, y) == (point.x, point.y):
+                point.x = 2048; point.y = 2048
+                point.col = False
+                sArray[x,y] = (0,0,0)

@@ -1,7 +1,9 @@
-import pygame
+import pygame, random
 from core.baseState import baseState
 from core.terrainGenerator import Terrain
 from core.player import Player
+from core.projectile import Projectile
+from core.tankBase import TankBase
 
 class GameState(baseState):
     def __init__(self):
@@ -15,7 +17,9 @@ class GameState(baseState):
         if not self.persist['terrainLoaded']:
             self.terrain.generateTerrain()
             self.persist['terrainLoaded'] = True
-            self.players = [ Player(60, 60, self.tank_t, self.tank_b) ]
+            self.players = [ Player(320, 10, self.tank_t, self.tank_b),
+                             Player(320, 10, self.tank_t, self.tank_b) ]
+            TankBase.terrain = self.terrain
 
     def get_event(self, event):
         if event.type == pygame.KEYDOWN:
@@ -24,9 +28,15 @@ class GameState(baseState):
                 self.done = True
 
     def update(self, dt, f_time):
-        key = pygame.key.get_pressed()
+        mpos = pygame.mouse.get_pos()
+        mbut = pygame.mouse.get_pressed()
+        key  = pygame.key.get_pressed()
+
         for player in self.players:
-            player.update(dt, key, self.terrain.pixels)
+            player.update(dt, key)
+        Projectile.update(dt)
+
+        if mbut[0]: self.terrain.cutSection(mpos, 12)
         
     def draw(self, surface):
         surface.blit(self.terrain.surface, (0,0))
@@ -37,8 +47,5 @@ class GameState(baseState):
             power = self.font.render('Power: {}'.format(player.power), True, (200,200,200))
 
             surface.blit(angle, angle.get_rect(midtop=self.s_rect.midtop))
-            surface.blit(power, power.get_rect(midtop=(self.s_rect.midtop[0],20)))
-
-        coords = self.players[0].getCoords()
-        coords = self.font.render(str(coords), True, (200,200,200))
-        surface.blit(coords, coords.get_rect(topright=self.s_rect.topright))
+            surface.blit(power, power.get_rect(midtop=(self.s_rect.midtop[0],16)))
+        Projectile.draw(surface)
