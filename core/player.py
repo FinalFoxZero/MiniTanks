@@ -12,6 +12,7 @@ class Player(TankBase):
         self.tx    = 0
         self.ty    = 0
         self.turn  = False
+        self.timer = 0
 
     def controls(self, dt, key):
         speed_cont = 30 # dt * 30 = fps(in ms) * 30 = 1 tick per second
@@ -29,16 +30,21 @@ class Player(TankBase):
         if self.power > 100: self.power = 100
         elif self.power < 0: self.power = 0
 
-        if key[pygame.K_SPACE] and self.ammo_count[self.active_ammo] > 0:
+        if key[pygame.K_SPACE] and self.ammo_count[self.active_ammo] > 0 \
+           and self.timer > 30:
             Projectile(self, self.tx, self.ty, self.power, self.angle)
             self.ammo_count[self.active_ammo] -= 1
+            self.timer = 0
 
     def update(self, dt, key):
         self.imBR.midbottom = (self.x, self.y)
         self.tx = self.imBR.centerx - 4
         self.ty = self.imBR.centery - 6
+
         if self.turn:
             self.controls(dt, key)
+        self.timer += 1
+
         self.screen_collision()
         self.ground_collision(dt)
 

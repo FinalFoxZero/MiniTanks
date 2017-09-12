@@ -99,7 +99,8 @@ if __name__ == '__main__':
     pygame.display.set_caption('Mini Tanks v0.1')
 
     states = {'START' : StartState(),
-              'GAME'  : GameState()}
+              'GAME'  : GameState(),
+              'PAUSE' : PauseState()}
     
     game = Game(screen, states, 'START')
     game.run()

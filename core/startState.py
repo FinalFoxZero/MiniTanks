@@ -14,9 +14,11 @@ class StartState(baseState):
         self.text  = self.font.render(self.intro, True, (255,255,255))
         self.tRect = self.text.get_rect(midtop=self.s_rect.midtop)
 
-        self.b0 = Button(self, (320, 240), 'Play',  stateDone('GAME'))
-        self.b1 = Button(self, (320, 275), 'Reset')
-        self.b2 = Button(self, (320, 310), 'Exit',  closeGame())
+        self.b0 = Button(self, (320, 170), 'Play',  stateDone('GAME'))
+        self.b1 = Button(self, (320, 205), '[Shop]')
+        self.b2 = Button(self, (320, 240), 'Reset')
+        self.b3 = Button(self, (320, 275), '[Settings]')
+        self.b4 = Button(self, (320, 310), 'Exit',  closeGame())
 
     def get_event(self, event):
         if event.type == pygame.KEYDOWN:
@@ -24,7 +26,7 @@ class StartState(baseState):
             self.done = True
 
     def update(self, dt, f_time):
-        if self.b1.getReturn(): self.persist['terrainLoaded'] = False
+        if self.b2.getReturn(): self.persist['terrainLoaded'] = False
         
 
     def draw(self, surface):

@@ -1,4 +1,4 @@
-import pygame, random
+import pygame
 from core.baseState import baseState
 from core.terrainGenerator import Terrain
 from core.player import Player
@@ -17,14 +17,20 @@ class GameState(baseState):
         if not self.persist['terrainLoaded']:
             self.terrain.generateTerrain()
             self.persist['terrainLoaded'] = True
-            self.players = [ Player(320, 10, self.tank_t, self.tank_b),
-                             Player(320, 10, self.tank_t, self.tank_b) ]
+            self.players = [ Player(320, 10, self.tank_t, self.tank_b) ]
+            self.players[0].turn = True
+            Projectile.randomWind()
             TankBase.terrain = self.terrain
 
     def get_event(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 self.next = 'START'
+                self.done = True
+            if event.key == pygame.K_PAUSE or \
+               event.key == pygame.K_p:
+                self.persist['ScreenShot'] = pygame.display.get_surface().copy()
+                self.next = 'PAUSE'
                 self.done = True
 
     def update(self, dt, f_time):
@@ -34,6 +40,7 @@ class GameState(baseState):
 
         for player in self.players:
             player.update(dt, key)
+
         Projectile.update(dt)
 
         if mbut[0]: self.terrain.cutSection(mpos, 12)
@@ -48,4 +55,13 @@ class GameState(baseState):
 
             surface.blit(angle, angle.get_rect(midtop=self.s_rect.midtop))
             surface.blit(power, power.get_rect(midtop=(self.s_rect.midtop[0],16)))
+
         Projectile.draw(surface)
+
+        wind = Projectile.wind
+        if wind[0] == 90:
+            w = self.font.render(str(round(wind[1], 3)) + ' -->', True, [255]*3)
+            surface.blit(w, (320, 440))
+        else:
+            w = self.font.render('<-- ' + str(round(wind[1], 3)), True, [255]*3)
+            surface.blit(w, (320, 440))

@@ -1,5 +1,6 @@
 import pygame
 from math import *
+from random import choice, random
 
 def addVectors(ang1, len1, ang2, len2):
     x = sin(ang1) * len1 + sin(ang2) * len2
@@ -23,7 +24,7 @@ class Projectile:
         self.vel = velocity
         self.ang = radians(-(angle-90))
         self.scl = 3
-        self.rad = 32
+        self.rad = 24
         Projectile.pList.append(self)
 
     def _collision(self):
@@ -32,11 +33,11 @@ class Projectile:
         try:
             if (0 > self.x > self.user.s_rect.w) or \
                (self.y > self.user.s_rect.h):
-                print('Out of Bounds')
+                #print('Out of Bounds')
                 return(True)
 
             elif terrain_array[int(self.y)][int(self.x)].col:
-                print('Hit Ground')
+                #print('Hit Ground')
                 terrain.cutSection((int(self.x),int(self.y)), self.rad)
                 return(True)
         except:pass
@@ -51,6 +52,10 @@ class Projectile:
     def _draw(self, surface):
         pygame.draw.circle(surface, (160,160,160),
                            (int(self.x), int(self.y)), self.scl)
+
+    @classmethod
+    def randomWind(cls):
+        cls.wind = (choice([90,180]), random())
 
     @classmethod
     def update(cls, dt):
