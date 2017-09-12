@@ -13,6 +13,7 @@ class Player(TankBase):
         self.ty    = 0
         self.turn  = False
         self.timer = 0
+        self.tDone = False
 
     def controls(self, dt, key):
         speed_cont = 30 # dt * 30 = fps(in ms) * 30 = 1 tick per second

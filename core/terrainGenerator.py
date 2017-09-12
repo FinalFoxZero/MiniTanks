@@ -15,11 +15,18 @@ class Terrain(object):
         self.sWidth  = s_width
         self.sHeight = s_height
         self.pixels  = []
-        self.surface = pygame.Surface((s_width, s_height), pygame.HWSURFACE)
+        self.surface = pygame.Surface((s_width, s_height),
+                                      pygame.SRCALPHA | pygame.HWSURFACE)
 
     def reset_terrain(self):
         self.pixels = []
-        self.surface = pygame.Surface((self.sWidth, self.sHeight), pygame.HWSURFACE)
+        self.surface = pygame.Surface((self.sWidth, self.sHeight),
+                                      pygame.SRCALPHA | pygame.HWSURFACE )
+
+    def pickLocation(self):
+        x = randint(10, self.sWidth-10)
+        y = sorted(self.pixels[i][x].y for i in range(len(self.pixels)))[0]
+        return(x,y)
 
     def generate_x_list(self):
         x_array = []
@@ -53,10 +60,11 @@ class Terrain(object):
             y_temp = []
             for x, a in enumerate(generated_world):
                 if y >= a:
-                    if y <= a + 16 and y >= a:
-                        self.surface.fill((0,90,10), (x,y,1,1))
-                    else:
-                        self.surface.fill((180,180,180), (x,y,1,1))
+                    rShade = abs(int(((self.sHeight - (y - (a-200))) / self.sHeight) * 255))
+                    if rShade > 255: rShade = 255
+                    elif rShade < 0: rShade = 0
+                    rCol = pygame.Color(rShade,rShade,rShade)
+                    self.surface.fill(rCol, (x,y,1,1))
                     y_temp.append( Pix(x,y) )
                 else:
                     y_temp.append( Pix(2048, 2048, False) )
@@ -74,10 +82,9 @@ class Terrain(object):
 
     def cutSection(self, position, radius):
         circlePoints = self.pointsInCircle(position, radius)
-        sArray = pygame.surfarray.pixels3d(self.surface)
-        for x, y in circlePoints:
+        for x,y in circlePoints:
             point = self.pixels[y][x]
-            if (x, y) == (point.x, point.y):
+            if (x,y) == (point.x, point.y):
                 point.x = 2048; point.y = 2048
                 point.col = False
-                sArray[x,y] = (0,0,0)
+                self.surface.fill((0,0,0,0), (x,y,1,1))

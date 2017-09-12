@@ -6,6 +6,7 @@ class TankBase(object):
         self.s_rect  = pygame.display.get_surface().get_rect()
         self.x = x
         self.y = y
+        self.health= 100
         self.power = 0
         self.angle = 0
         self.trajectory  = []

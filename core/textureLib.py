@@ -8,7 +8,7 @@ class textures:
     def grab(self, image):
         image = self.imgPath + image
         if not image in self.lib:
-            new_image = pygame.image.load(image)
+            new_image = pygame.image.load(image).convert_alpha()
             self.lib[image] = new_image
             print('Adding %s to library' %  image)
         return(self.lib[image])

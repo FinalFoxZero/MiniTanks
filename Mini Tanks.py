@@ -25,8 +25,6 @@ class Game(object):
     def event_loop(self):
         for event in pygame.event.get():
             if event.type == QUIT: self.done = True
-            #if event.type == KEYDOWN:
-            #    if event.key == K_ESCAPE: self.done = True
             self.state.get_event(event)
 
     def default_load(self):
