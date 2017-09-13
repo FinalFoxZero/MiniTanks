@@ -35,7 +35,7 @@ class Projectile:
             pass
         
 
-    def _collision(self, tanks):
+    def _collision(self, tanks=None):
         terrain = self.user.getTerrain()
         terrain_array = terrain.pixels
 
