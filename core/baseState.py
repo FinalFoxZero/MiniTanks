@@ -1,7 +1,7 @@
 import pygame
-from core.textureLib import textures
+from core.library import Library
 
-texture_center = textures()
+file_library = Library()
 
 class baseState(object):
     def __init__(self):
@@ -11,7 +11,7 @@ class baseState(object):
         self.s_rect  = pygame.display.get_surface().get_rect()
         self.persist = {}
         self.font    = pygame.font.Font(None, 18)
-        self.texLib  = texture_center
+        self.texLib  = file_library
 
     def startup(self, persistent):
         self.persist = persistent

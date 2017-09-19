@@ -1,9 +1,12 @@
 from core import *
 from time import time
 
-debug = ['FPS: ', 'Current State: ', 'State Draw: ',
-         'State Logic: ', 'Last State Swap: ',
-         'Current Frame: ']
+debug = ['FPS -------------| ',
+         'Current State ---| ',
+         'Current Frame ---| ',
+         'State Draw ------| ',
+         'State Logic -----| ',
+         'Last State Swap -| ']
 
 class Game(object):
     def __init__(self, screen, states, start_state):
@@ -11,11 +14,10 @@ class Game(object):
         self.screen     = screen
         self.clock      = pygame.time.Clock()
         self.frame_time = 0
-        self.fps        = 30
         self.states     = states
         self.state_name = start_state
         self.state      = self.states[self.state_name]
-        self.gFont      = pygame.font.Font(None, 16)
+        self.gFont      = pygame.font.Font('DejaVuSans.ttf', 10)
 
         self.debug      = True
         self.sDrawTime  = 0.0
@@ -25,11 +27,13 @@ class Game(object):
     def event_loop(self):
         for event in pygame.event.get():
             if event.type == QUIT: self.done = True
+            if event.type == KEYDOWN:
+                if event.key == K_i:self.debug = not self.debug
             self.state.get_event(event)
 
     def default_load(self):
         self.screen.fill((10,10,10))
-        ld  = self.gFont.render('Loading..', True, (255,255,255))
+        ld  = self.gFont.render('| Loading |', True, (255,255,255))
         ldr = ld.get_rect(center=self.screen.get_rect().center)
         self.screen.blit(ld, ldr)
         pygame.display.flip()
@@ -47,39 +51,44 @@ class Game(object):
         self.sSwapTime  = time() - self.sSwapTime
 
     def update(self, dt, f_time):
-        if self.state.quit:   self.done = True
-        elif self.state.done: self.flip_state()
-
         self.sLogicTime = time()
+
+        if   self.state.quit: self.done = True
+        elif self.state.done: self.flip_state()
         self.state.update(dt, f_time)
         GUI.update(self.state)
+
         self.sLogicTime = time() - self.sLogicTime
 
     def render(self):
-        self.screen.fill((0,0,0))
-
         self.sDrawTime = time()
+
+        if hasattr(self.state, 'background'):
+            self.screen.blit(self.state.background, (0,0))
+        else: self.screen.fill((0,0,0))
+
         self.state.draw(self.screen)
         GUI.render(self.state, self.screen)
+
         self.sDrawTime = time() - self.sDrawTime
 
         if self.debug:
             for i, text in enumerate(self.debug_overlay()):
-                self.screen.blit(text, text.get_rect(topleft=(4, i*text.get_height()+5))) 
+                self.screen.blit(text, text.get_rect(topleft=(4, i*text.get_height()+20)))
 
     def debug_overlay(self):
-        deb_ = self.gFont.render('Debug Information', True, (255,255,255))
-        fps_ = self.gFont.render(debug[0] + str(round(self.clock.get_fps(), 2)), True, (255,255,0))
-        cst_ = self.gFont.render(debug[1] + self.state_name, True, (60,240,30))
-        cft_ = self.gFont.render(debug[5] + str(self.frame_time), True, (30,160,250))
-        sdt_ = self.gFont.render(debug[2] + str(round(self.sDrawTime,  4)) + 'ms', True, (255,255,255))
-        slt_ = self.gFont.render(debug[3] + str(round(self.sLogicTime, 4)) + 'ms', True, (255,255,255))
-        sst_ = self.gFont.render(debug[4] + str(round(self.sSwapTime,  8)) + 'ms', True, (255,255,255))
+        deb_ = self.gFont.render('Debug Information ([i] toggle)',                 True, (255, 255, 255))
+        fps_ = self.gFont.render(debug[0] + str(round(self.clock.get_fps(), 2)),   True, (255, 255,   0))
+        cst_ = self.gFont.render(debug[1] + self.state_name,                       True, ( 60, 180,  30))
+        cft_ = self.gFont.render(debug[2] + str(self.frame_time),                  True, ( 30, 160, 250))
+        sdt_ = self.gFont.render(debug[3] + str(round(self.sDrawTime,  4)) + 'ms', True, (255, 255, 255))
+        slt_ = self.gFont.render(debug[4] + str(round(self.sLogicTime, 4)) + 'ms', True, (255, 255, 255))
+        sst_ = self.gFont.render(debug[5] + str(round(self.sSwapTime,  4)) + 'ms', True, (255, 255, 255))
         return(deb_, fps_, cst_, cft_, sdt_, slt_, sst_)
         
     def run(self):
         while not self.done:
-            dt = self.clock.tick(self.fps) / 1000
+            dt = self.clock.tick(30) / 1000
             self.event_loop()
             self.update(dt, self.frame_time)
             self.render()

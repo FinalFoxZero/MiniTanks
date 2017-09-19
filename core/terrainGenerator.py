@@ -18,7 +18,7 @@ class Terrain(object):
         self.surface = pygame.Surface((s_width, s_height),
                                       pygame.SRCALPHA | pygame.HWSURFACE)
 
-    def reset_terrain(self):
+    def resetTerrain(self):
         self.pixels = []
         self.surface = pygame.Surface((self.sWidth, self.sHeight),
                                       pygame.SRCALPHA | pygame.HWSURFACE )
@@ -28,7 +28,7 @@ class Terrain(object):
         y = sorted(self.pixels[i][x].y for i in range(len(self.pixels)))[0]
         return(x,y)
 
-    def generate_x_list(self):
+    def generateHeight(self):
         x_array = []
         rP_0, rP_1, rP_2, rP_3 = [randint(-5000, 5000) for i in range(4)] #random phase x4
         rA_l = randint(1, 5)  # low   amp
@@ -55,7 +55,7 @@ class Terrain(object):
         return( x_array )
 
     def generateTerrain(self):
-        generated_world = self.generate_x_list()
+        generated_world = self.generateHeight()
         for y in range(self.sHeight):
             y_temp = []
             for x, a in enumerate(generated_world):
